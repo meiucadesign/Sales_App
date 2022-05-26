@@ -5,7 +5,7 @@ import '../styles/styles.dart';
 class HomeScreen extends StatefulWidget {
   List<DropdownMenuItem<String>> get dropdownItems {
     List<DropdownMenuItem<String>> menuItems = [
-      DropdownMenuItem(child: Text("Select"), value: "default", enabled: false),
+      const DropdownMenuItem(child: Text("Select"), value: "default", enabled: false),
       DropdownMenuItem(child: Text("Panadol"), value: "Panadol"),
       DropdownMenuItem(child: Text("Omnidol"), value: "Omnidol"),
       DropdownMenuItem(child: Text("Dazzy"), value: "Dazzy"),
@@ -25,17 +25,13 @@ class _HomeScreenState extends State<HomeScreen> {
   TextEditingController rateController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   var productList = [
-    TableRow(
-      decoration: BoxDecoration(),
+    const TableRow(
       children: [
-        Center(
-          child: Text(
-            "Product",
-          ),
-        ),
-        Center(child: Text("Description")),
-        Center(child: Text("Quantity")),
-        Center(child: Text("Rate")),
+        Text(
+          "Product",textAlign: TextAlign.center,),
+        Text("Description",textAlign: TextAlign.center,),
+        Text("Quantity",textAlign: TextAlign.center,),
+        Text("Rate",textAlign: TextAlign.center,),
       ],
     )
   ];
@@ -203,22 +199,37 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: productList,
               ),
               const SizedBox(
-                height: 10,
+                height: 30,
               ),
               TextButton(
-                onPressed: () {
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(Colors.blue),
+                  foregroundColor: MaterialStateProperty.all(Colors.white,),
+                  textStyle: MaterialStateProperty.all(TextStyle(fontWeight: FontWeight.normal)),
+                ),
+                onPressed: (total==0)?null:() {
                   showDialog(
                       context: context,
                       builder: (context) {
                         return AlertDialog(
                           title: const Text("Total"),
-                          content: Text("The total is$total"),
+                          content: Text("The total is $total"),
                           actions: [
                             TextButton(
                               onPressed: () {
                                 Navigator.of(context).pop();
                               },
-                              child: const Text("Ok"),
+                              child: const Text("Cancel"),
+                            ),TextButton(
+                              onPressed: () {
+                                setState(() {
+                                  
+                                productList.removeRange(1, productList.length);
+                                });
+                                total = 0;
+                                Navigator.of(context).pop();
+                              },
+                              child: const Text("Submit"),
                             ),
                           ],
                         );
@@ -226,6 +237,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
                 child: const Text("Save Invoice"),
               ),
+              
             ],
           ),
         ),
@@ -241,8 +253,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       .singleWhere((element) => element.value == firsItem))
                   .child as Text)
               .data!),
-          Text(descriptionController.text,
-              maxLines: 1, overflow: TextOverflow.ellipsis),
+          Center(
+            child: Text(descriptionController.text,
+                maxLines: 1, overflow: TextOverflow.ellipsis),
+          ),
           Text(qntController.text),
           Text(rateController.text),
         ]));
