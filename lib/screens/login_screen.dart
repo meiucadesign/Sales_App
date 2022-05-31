@@ -19,7 +19,7 @@ class LoginScreen extends StatelessWidget {
           height: screenSize.height * .40,
           decoration: const BoxDecoration(
             borderRadius: BorderRadius.all(Radius.circular(20)),
-            color: Colors.grey,
+            color: Color.fromARGB(255, 236, 236, 236),
             boxShadow: [
               BoxShadow(
                 color: Color.fromARGB(221, 27, 27, 27),
@@ -38,7 +38,7 @@ class LoginScreen extends StatelessWidget {
                 "Log In",
                 style: TextStyle(
                   fontSize: 30,
-                  color: Colors.white,
+                  color: Colors.blue,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -49,13 +49,13 @@ class LoginScreen extends StatelessWidget {
                 decoration: InputDecoration(
                   hintText: "Enter Email",
                   floatingLabelStyle: TextStyle(
-                    color: Colors.white,
+                    color: Colors.blue,
                     fontSize: 20,
                   ),
                   label: const Text(
                     "Email",
                     style: TextStyle(
-                      color: Colors.white,
+                      color: Colors.blue,
                     ),
                   ),
                   hintStyle: const TextStyle(
@@ -72,7 +72,7 @@ class LoginScreen extends StatelessWidget {
                 obscureText: true,
                 decoration: InputDecoration(
                   floatingLabelStyle: const TextStyle(
-                    color: Colors.white,
+                    color: Colors.blue,
                     fontSize: 20,
                   ),
                   hintText: "Enter Password",
@@ -80,7 +80,7 @@ class LoginScreen extends StatelessWidget {
                   label: const Text(
                     "Password",
                     style: TextStyle(
-                      color: Colors.white,
+                      color: Colors.blue,
                     ),
                   ),
                   focusedBorder: customTextFieldDecoration,
@@ -90,10 +90,14 @@ class LoginScreen extends StatelessWidget {
               const SizedBox(
                 height: 20,
               ),
-              TextButton(
+              TextButton.icon(
+                icon: const Icon(
+                  Icons.login_rounded,
+                  color: Colors.white,
+                ),
                 style: ButtonStyle(
                     backgroundColor: MaterialStateProperty.all(
-                      Colors.white,
+                      Colors.blue,
                     ),
                     minimumSize: MaterialStateProperty.all(Size(150, 40))),
                 onPressed: () {
@@ -102,7 +106,13 @@ class LoginScreen extends StatelessWidget {
                       MaterialPageRoute(builder: (context) => HomeScreen()),
                       ((route) => false));
                 },
-                child: Text("Log in"),
+                label: const Text(
+                  "Log in",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                  ),
+                ),
               ),
             ],
           ),

@@ -5,7 +5,8 @@ import '../styles/styles.dart';
 class HomeScreen extends StatefulWidget {
   List<DropdownMenuItem<String>> get dropdownItems {
     List<DropdownMenuItem<String>> menuItems = [
-      const DropdownMenuItem(child: Text("Select"), value: "default", enabled: false),
+      const DropdownMenuItem(
+          child: Text("Select"), value: "default", enabled: false),
       DropdownMenuItem(child: Text("Panadol"), value: "Panadol"),
       DropdownMenuItem(child: Text("Omnidol"), value: "Omnidol"),
       DropdownMenuItem(child: Text("Dazzy"), value: "Dazzy"),
@@ -26,12 +27,50 @@ class _HomeScreenState extends State<HomeScreen> {
   final _formKey = GlobalKey<FormState>();
   var productList = [
     const TableRow(
+      decoration: BoxDecoration(
+        color: Color.fromARGB(179, 31, 154, 236),
+      ),
       children: [
-        Text(
-          "Product",textAlign: TextAlign.center,),
-        Text("Description",textAlign: TextAlign.center,),
-        Text("Quantity",textAlign: TextAlign.center,),
-        Text("Rate",textAlign: TextAlign.center,),
+        Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text(
+            "Product",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.white,
+            ),
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text(
+            "Description",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.white,
+            ),
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text(
+            "Quantity",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.white,
+            ),
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text(
+            "Rate",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.white,
+            ),
+          ),
+        ),
       ],
     )
   ];
@@ -40,13 +79,13 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey,
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text("add Invoice"),
         centerTitle: true,
       ),
       body: Container(
-        margin: EdgeInsets.all(10),
+        margin: const EdgeInsets.all(10),
         width: double.infinity,
         height: double.infinity,
         child: SingleChildScrollView(
@@ -58,6 +97,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Column(
                     children: [
                       DropdownButtonFormField(
+                        style: const TextStyle(
+                          color: Colors.blue,
+                          fontSize: 20,
+                        ),
                         validator: (value) {
                           if (value == "default") {
                             return "Select a Product";
@@ -78,12 +121,20 @@ class _HomeScreenState extends State<HomeScreen> {
                           controller: descriptionController,
                           maxLines: 5,
                           decoration: InputDecoration(
-                            hintText: "Enter Product Description",
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
                             fillColor: Colors.white,
+                            hintText: "Enter Product Description",
+                            hintStyle: TextStyle(
+                              color: Colors.blue,
+                            ),
                             filled: true,
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(20),
-                              borderSide: BorderSide.none,
+                              borderSide: BorderSide(
+                                color: Colors.blue,
+                              ),
                             ),
                           ),
                         ),
@@ -118,7 +169,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           label: const Text(
                             "Quantity",
                             style: TextStyle(
-                              color: Colors.white,
+                              color: Colors.blue,
                             ),
                           ),
                           focusedBorder: customTextFieldDecoration,
@@ -140,7 +191,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           label: const Text(
                             "Dicount",
                             style: TextStyle(
-                              color: Colors.white,
+                              color: Colors.blue,
                             ),
                           ),
                           focusedBorder: customTextFieldDecoration,
@@ -167,7 +218,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           label: const Text(
                             "Rate",
                             style: TextStyle(
-                              color: Colors.white,
+                              color: Colors.blue,
                             ),
                           ),
                           focusedBorder: customTextFieldDecoration,
@@ -177,13 +228,19 @@ class _HomeScreenState extends State<HomeScreen> {
                       const SizedBox(
                         height: 10,
                       ),
-                      TextButton(
+                      TextButton.icon(
+                        style: ButtonStyle(
+                          backgroundColor:
+                              MaterialStateProperty.all(Colors.blue),
+                          foregroundColor:
+                              MaterialStateProperty.all(Colors.white),
+                        ),
+                        icon: const Icon(Icons.add_circle),
                         onPressed: () {
                           _addItemtoList();
                         },
-                        child: const Text(
+                        label: const Text(
                           "Add",
-                          style: TextStyle(color: Colors.white),
                         ),
                       ),
                     ],
@@ -193,7 +250,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               Table(
                 border: TableBorder.all(
-                  color: Colors.white,
+                  color: Colors.blue,
                   width: 2,
                 ),
                 children: productList,
@@ -204,40 +261,45 @@ class _HomeScreenState extends State<HomeScreen> {
               TextButton(
                 style: ButtonStyle(
                   backgroundColor: MaterialStateProperty.all(Colors.blue),
-                  foregroundColor: MaterialStateProperty.all(Colors.white,),
-                  textStyle: MaterialStateProperty.all(TextStyle(fontWeight: FontWeight.normal)),
+                  foregroundColor: MaterialStateProperty.all(
+                    Colors.white,
+                  ),
+                  textStyle: MaterialStateProperty.all(
+                      TextStyle(fontWeight: FontWeight.normal)),
                 ),
-                onPressed: (total==0)?null:() {
-                  showDialog(
-                      context: context,
-                      builder: (context) {
-                        return AlertDialog(
-                          title: const Text("Total"),
-                          content: Text("The total is $total"),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              child: const Text("Cancel"),
-                            ),TextButton(
-                              onPressed: () {
-                                setState(() {
-                                  
-                                productList.removeRange(1, productList.length);
-                                });
-                                total = 0;
-                                Navigator.of(context).pop();
-                              },
-                              child: const Text("Submit"),
-                            ),
-                          ],
-                        );
-                      });
-                },
+                onPressed: (total == 0)
+                    ? null
+                    : () {
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: const Text("Total"),
+                                content: Text("The total is $total"),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: const Text("Cancel"),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        productList.removeRange(
+                                            1, productList.length);
+                                      });
+                                      total = 0;
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: const Text("Submit"),
+                                  ),
+                                ],
+                              );
+                            });
+                      },
                 child: const Text("Save Invoice"),
               ),
-              
             ],
           ),
         ),
@@ -249,16 +311,41 @@ class _HomeScreenState extends State<HomeScreen> {
     if (_formKey.currentState!.validate()) {
       setState(() {
         productList.add(TableRow(children: [
-          Text(((widget.dropdownItems
-                      .singleWhere((element) => element.value == firsItem))
-                  .child as Text)
-              .data!),
-          Center(
-            child: Text(descriptionController.text,
-                maxLines: 1, overflow: TextOverflow.ellipsis),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              ((widget.dropdownItems
+                          .singleWhere((element) => element.value == firsItem))
+                      .child as Text)
+                  .data!,
+              textAlign: TextAlign.center,
+            ),
           ),
-          Text(qntController.text),
-          Text(rateController.text),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Center(
+              child: Text(
+                descriptionController.text,
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              qntController.text,
+              textAlign: TextAlign.center,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              rateController.text,
+              textAlign: TextAlign.center,
+            ),
+          ),
         ]));
       });
       total = total +
