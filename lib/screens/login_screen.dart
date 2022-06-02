@@ -61,8 +61,8 @@ class LoginScreen extends StatelessWidget {
                   hintStyle: const TextStyle(
                     color: Colors.black38,
                   ),
-                  focusedBorder: customTextFieldDecoration,
-                  enabledBorder: customTextFieldDecoration,
+                  focusedBorder: customNormalTextFieldBorder,
+                  enabledBorder: customNormalTextFieldBorder,
                 ),
               ),
               const SizedBox(
@@ -83,8 +83,8 @@ class LoginScreen extends StatelessWidget {
                       color: Colors.blue,
                     ),
                   ),
-                  focusedBorder: customTextFieldDecoration,
-                  enabledBorder: customTextFieldDecoration,
+                  focusedBorder: customNormalTextFieldBorder,
+                  enabledBorder: customNormalTextFieldBorder,
                 ),
               ),
               const SizedBox(
@@ -101,10 +101,10 @@ class LoginScreen extends StatelessWidget {
                     ),
                     minimumSize: MaterialStateProperty.all(Size(150, 40))),
                 onPressed: () {
-                  Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(builder: (context) => HomeScreen()),
-                      ((route) => false));
+                  Navigator.pushReplacementNamed(
+                    context,
+                    HomeScreen.routeName,
+                  );
                 },
                 label: const Text(
                   "Log in",

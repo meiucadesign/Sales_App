@@ -2,10 +2,13 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:sales_app/models/distributor.dart';
+import 'package:sales_app/screens/dashboard.dart';
 
 import '../styles/styles.dart';
+import '../widgets/custom_drawer.dart';
 
 class HomeScreen extends StatefulWidget {
+  static const routeName = '/home';
   List<DropdownMenuItem<String>> get dropdownItems {
     List<DropdownMenuItem<String>> menuItems = [
       const DropdownMenuItem(
@@ -84,7 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String msg = "null";
   @override
   void initState() {
-    Timer.run(() => _showDialog());
+    // Timer.run(() => _showDialog());
     super.initState();
   }
 
@@ -96,6 +99,7 @@ class _HomeScreenState extends State<HomeScreen> {
         title: const Text("add Invoice"),
         centerTitle: true,
       ),
+      drawer: CustomDrawer(),
       body: Container(
         margin: const EdgeInsets.all(10),
         width: double.infinity,
@@ -138,13 +142,13 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                             fillColor: Colors.white,
                             hintText: "Enter Product Description",
-                            hintStyle: TextStyle(
+                            hintStyle: const TextStyle(
                               color: Colors.blue,
                             ),
                             filled: true,
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(20),
-                              borderSide: BorderSide(
+                              borderSide: const BorderSide(
                                 color: Colors.blue,
                               ),
                             ),
@@ -184,8 +188,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               color: Colors.blue,
                             ),
                           ),
-                          focusedBorder: customTextFieldDecoration,
-                          enabledBorder: customTextFieldDecoration,
+                          errorBorder: customErrorTextFieldBorder,
+                          focusedBorder: customNormalTextFieldBorder,
+                          enabledBorder: customNormalTextFieldBorder,
                         ),
                       ),
                       const SizedBox(
@@ -206,8 +211,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               color: Colors.blue,
                             ),
                           ),
-                          focusedBorder: customTextFieldDecoration,
-                          enabledBorder: customTextFieldDecoration,
+                          errorBorder: customErrorTextFieldBorder,
+                          focusedBorder: customNormalTextFieldBorder,
+                          enabledBorder: customNormalTextFieldBorder,
                         ),
                       ),
                       const SizedBox(
@@ -233,8 +239,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               color: Colors.blue,
                             ),
                           ),
-                          focusedBorder: customTextFieldDecoration,
-                          enabledBorder: customTextFieldDecoration,
+                          errorBorder: customErrorTextFieldBorder,
+                          focusedBorder: customNormalTextFieldBorder,
+                          enabledBorder: customNormalTextFieldBorder,
                         ),
                       ),
                       const SizedBox(
@@ -370,44 +377,22 @@ class _HomeScreenState extends State<HomeScreen> {
 
   _showDialog() {
     var _formKey = GlobalKey<FormState>();
-    //  showDialog(
-    //   context: context,
-    //   builder: (context) {
-    //     return Dialog(
-    //         child: Container(
-    //       height: 300,
-    //       child: Column(
-    //         children: [
-    //           TextField(
-    //             onChanged: (value) => _controller = value,
-    //             decoration: InputDecoration(
-    //               hintText: "Distributor Name",
-    //             ),
-    //           ),
-    //           IconButton(
-    //               onPressed: () {
-    //                 print(_controller);
-    //                 Navigator.pop(context);
-    //                 print("object");
-    //               },
-    //               icon: Icon(Icons.add_circle)),
-    //         ],
-    //       ),
-    //     ));
-    //   },
-    // );
-    // print("end of method ");
-    // return _controller;
+
     showDialog(
-      barrierDismissible: false,
+        barrierDismissible: false,
         context: context,
         builder: (context) {
           return AlertDialog(
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(
+                Radius.circular(20.0),
+              ),
+            ),
             title: const Text("Distributor Name"),
-            content: Form(
-              key: _formKey,
-              child: Container(
-                height: 200,
+            content: SizedBox(
+              height: 250,
+              child: Form(
+                key: _formKey,
                 child: Column(
                   children: [
                     TextFormField(

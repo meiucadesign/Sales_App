@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sales_app/screens/dashboard.dart';
 import 'package:sales_app/screens/home_screen.dart';
 import 'screens/login_screen.dart';
 
@@ -16,8 +17,12 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: LoginScreen(),
+      // home: LoginScreen(),
+      routes: {
+        "/": (context) => LoginScreen(),
+        HomeScreen.routeName: (context) => HomeScreen(),
+        DashBoard.routeName: (context) => DashBoard(),
+      },
     );
   }
 }
-
