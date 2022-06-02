@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:sales_app/models/distributor.dart';
 
 import '../styles/styles.dart';
 
@@ -20,6 +23,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  Distributor distributor =
+      Distributor(name: "", number: "", paymentMethod: "");
   TextEditingController descriptionController = TextEditingController();
   TextEditingController qntController = TextEditingController();
   TextEditingController discountController = TextEditingController();
@@ -76,6 +81,13 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
   var firsItem = "default";
   double total = 0;
+  String msg = "null";
+  @override
+  void initState() {
+    Timer.run(() => _showDialog());
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -237,6 +249,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         icon: const Icon(Icons.add_circle),
                         onPressed: () {
+                          print(
+                              "Name:${distributor.name} Number:${distributor.number} Payment Method:${distributor.paymentMethod}");
                           _addItemtoList();
                         },
                         label: const Text(
@@ -352,5 +366,96 @@ class _HomeScreenState extends State<HomeScreen> {
           int.parse(rateController.text) * int.parse(qntController.text);
       _formKey.currentState!.reset();
     }
+  }
+
+  _showDialog() {
+    var _formKey = GlobalKey<FormState>();
+    //  showDialog(
+    //   context: context,
+    //   builder: (context) {
+    //     return Dialog(
+    //         child: Container(
+    //       height: 300,
+    //       child: Column(
+    //         children: [
+    //           TextField(
+    //             onChanged: (value) => _controller = value,
+    //             decoration: InputDecoration(
+    //               hintText: "Distributor Name",
+    //             ),
+    //           ),
+    //           IconButton(
+    //               onPressed: () {
+    //                 print(_controller);
+    //                 Navigator.pop(context);
+    //                 print("object");
+    //               },
+    //               icon: Icon(Icons.add_circle)),
+    //         ],
+    //       ),
+    //     ));
+    //   },
+    // );
+    // print("end of method ");
+    // return _controller;
+    showDialog(
+      barrierDismissible: false,
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text("Distributor Name"),
+            content: Form(
+              key: _formKey,
+              child: Container(
+                height: 200,
+                child: Column(
+                  children: [
+                    TextFormField(
+                      onSaved: (newValue) =>
+                          distributor.name = newValue.toString(),
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return "Enter Distributor Name";
+                        }
+                      },
+                      decoration: const InputDecoration(
+                        hintText: "Distributor Name",
+                      ),
+                    ),
+                    TextFormField(
+                      onSaved: (newValue) =>
+                          distributor.number = newValue.toString(),
+                      validator: (value) =>
+                          value!.isEmpty ? "Enter Address" : null,
+                      decoration: const InputDecoration(
+                        hintText: "Distributor Phone",
+                      ),
+                    ),
+                    TextFormField(
+                      onSaved: (newValue) =>
+                          distributor.paymentMethod = newValue.toString(),
+                      validator: (value) =>
+                          value!.isEmpty ? "Enter Address" : null,
+                      decoration: const InputDecoration(
+                        hintText: "Distributor Payment Method",
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    _formKey.currentState!.save();
+                    Navigator.pop(context);
+                  }
+                },
+                child: const Text("Submit"),
+              ),
+            ],
+          );
+        });
   }
 }
