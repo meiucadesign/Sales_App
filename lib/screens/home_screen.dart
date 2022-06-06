@@ -21,13 +21,15 @@ class HomeScreen extends StatefulWidget {
     return menuItems;
   }
 
+  var bankSelected = false;
+
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  Distributor distributor =
-      Distributor(name: "", number: "", paymentMethod: "");
+  Distributor distributor = Distributor(
+      name: "", number: "", paymentMethod: "null", bankSelected: false);
   TextEditingController descriptionController = TextEditingController();
   TextEditingController qntController = TextEditingController();
   TextEditingController discountController = TextEditingController();
@@ -87,7 +89,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String msg = "null";
   @override
   void initState() {
-    // Timer.run(() => _showDialog());
+    Timer.run(() => _showDialog());
     super.initState();
   }
 
@@ -378,6 +380,7 @@ class _HomeScreenState extends State<HomeScreen> {
   _showDialog() {
     var _formKey = GlobalKey<FormState>();
 
+    var selectedValue = "null";
     showDialog(
         barrierDismissible: false,
         context: context,
@@ -416,15 +419,68 @@ class _HomeScreenState extends State<HomeScreen> {
                         hintText: "Distributor Phone",
                       ),
                     ),
-                    TextFormField(
-                      onSaved: (newValue) =>
-                          distributor.paymentMethod = newValue.toString(),
-                      validator: (value) =>
-                          value!.isEmpty ? "Enter Address" : null,
-                      decoration: const InputDecoration(
-                        hintText: "Distributor Payment Method",
-                      ),
+                    DropdownButtonFormField(
+                      value: distributor.paymentMethod,
+                      items: [
+                        DropdownMenuItem(
+                          enabled: false,
+                          child: Text("Select Payment Method"),
+                          value: "null",
+                        ),
+                        DropdownMenuItem(
+                          child: Text("Cash"),
+                          value: "Cash",
+                        ),
+                        DropdownMenuItem(
+                          child: Text("Bank"),
+                          value: "Bank",
+                        ),
+                      ],
+                      onChanged: (value) {
+                        setState(() {
+                          selectedValue = value.toString();
+                        });
+                        if (value.toString() == "Bank") {
+                          setState(() {
+                            widget.bankSelected = true;
+                          });
+                          print(widget.bankSelected);
+                        } else {
+                          setState(() {
+                            widget.bankSelected = false;
+                          });
+                        }
+                        print(selectedValue);
+                      },
                     ),
+                    widget.bankSelected
+                        ? DropdownButtonFormField(
+                            items: [
+                              DropdownMenuItem(
+                                enabled: false,
+                                child: Text("Select Bank"),
+                                value: "null",
+                              ),
+                              DropdownMenuItem(
+                                child: Text("HBL"),
+                                value: "HBL",
+                              ),
+                              DropdownMenuItem(
+                                child: Text("UBL"),
+                                value: "UBL",
+                              ),
+                              DropdownMenuItem(
+                                child: Text("NBP"),
+                                value: "NBP",
+                              ),
+                              DropdownMenuItem(
+                                child: Text("ABL"),
+                                value: "ABL",
+                              ),
+                            ],
+                            onChanged: (value) {},
+                          )
+                        : const SizedBox(),
                   ],
                 ),
               ),

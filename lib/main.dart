@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sales_app/models/distributor.dart';
 import 'package:sales_app/screens/dashboard.dart';
 import 'package:sales_app/screens/home_screen.dart';
 import 'screens/login_screen.dart';
