@@ -6,6 +6,7 @@ import 'package:sales_app/screens/dashboard.dart';
 
 import '../styles/styles.dart';
 import '../widgets/custom_drawer.dart';
+import '../widgets/show_custom_dialog.dart';
 
 class HomeScreen extends StatefulWidget {
   static const routeName = '/home';
@@ -89,7 +90,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String msg = "null";
   @override
   void initState() {
-    Timer.run(() => _showDialog());
+    Timer.run(() => showCustomDialog(context));
     super.initState();
   }
 
@@ -375,128 +376,5 @@ class _HomeScreenState extends State<HomeScreen> {
           int.parse(rateController.text) * int.parse(qntController.text);
       _formKey.currentState!.reset();
     }
-  }
-
-  _showDialog() {
-    var _formKey = GlobalKey<FormState>();
-
-    var selectedValue = "null";
-    showDialog(
-        barrierDismissible: false,
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(
-                Radius.circular(20.0),
-              ),
-            ),
-            title: const Text("Distributor Name"),
-            content: SizedBox(
-              height: 250,
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  children: [
-                    TextFormField(
-                      onSaved: (newValue) =>
-                          distributor.name = newValue.toString(),
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return "Enter Distributor Name";
-                        }
-                      },
-                      decoration: const InputDecoration(
-                        hintText: "Distributor Name",
-                      ),
-                    ),
-                    TextFormField(
-                      onSaved: (newValue) =>
-                          distributor.number = newValue.toString(),
-                      validator: (value) =>
-                          value!.isEmpty ? "Enter Address" : null,
-                      decoration: const InputDecoration(
-                        hintText: "Distributor Phone",
-                      ),
-                    ),
-                    DropdownButtonFormField(
-                      value: distributor.paymentMethod,
-                      items: [
-                        DropdownMenuItem(
-                          enabled: false,
-                          child: Text("Select Payment Method"),
-                          value: "null",
-                        ),
-                        DropdownMenuItem(
-                          child: Text("Cash"),
-                          value: "Cash",
-                        ),
-                        DropdownMenuItem(
-                          child: Text("Bank"),
-                          value: "Bank",
-                        ),
-                      ],
-                      onChanged: (value) {
-                        setState(() {
-                          selectedValue = value.toString();
-                        });
-                        if (value.toString() == "Bank") {
-                          setState(() {
-                            widget.bankSelected = true;
-                          });
-                          print(widget.bankSelected);
-                        } else {
-                          setState(() {
-                            widget.bankSelected = false;
-                          });
-                        }
-                        print(selectedValue);
-                      },
-                    ),
-                    widget.bankSelected
-                        ? DropdownButtonFormField(
-                            items: [
-                              DropdownMenuItem(
-                                enabled: false,
-                                child: Text("Select Bank"),
-                                value: "null",
-                              ),
-                              DropdownMenuItem(
-                                child: Text("HBL"),
-                                value: "HBL",
-                              ),
-                              DropdownMenuItem(
-                                child: Text("UBL"),
-                                value: "UBL",
-                              ),
-                              DropdownMenuItem(
-                                child: Text("NBP"),
-                                value: "NBP",
-                              ),
-                              DropdownMenuItem(
-                                child: Text("ABL"),
-                                value: "ABL",
-                              ),
-                            ],
-                            onChanged: (value) {},
-                          )
-                        : const SizedBox(),
-                  ],
-                ),
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    _formKey.currentState!.save();
-                    Navigator.pop(context);
-                  }
-                },
-                child: const Text("Submit"),
-              ),
-            ],
-          );
-        });
   }
 }
