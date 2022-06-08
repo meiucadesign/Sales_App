@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 
-class Distributor extends ChangeNotifier {
+class Distributor {
   String name;
   String number;
   String paymentMethod;
@@ -18,12 +18,10 @@ class Distributor extends ChangeNotifier {
   });
   void selectBank(bool newValue) {
     bankSelected = newValue;
-    notifyListeners();
   }
 
   void updatePaymentMethod(String newPaymentMethod) {
     paymentMethod = newPaymentMethod;
-    notifyListeners();
   }
 }
 

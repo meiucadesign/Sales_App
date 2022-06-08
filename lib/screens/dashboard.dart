@@ -17,7 +17,14 @@ class DashBoard extends StatelessWidget {
     _SalesData('Feb', 28),
     _SalesData('Mar', 34),
     _SalesData('Apr', 32),
-    _SalesData('May', 40)
+    _SalesData('May', 40),
+    _SalesData('Jun', 32),
+    _SalesData('Jul', 35),
+    _SalesData('Aug', 40),
+    _SalesData('Sep', 28),
+    _SalesData('Oct', 32),
+    _SalesData('Nov', 35),
+    _SalesData('Dec', 40),
   ];
 
   @override
@@ -31,20 +38,20 @@ class DashBoard extends StatelessWidget {
       body: Column(
         children: [
           SfCircularChart(
-              title: ChartTitle(text: "Sales"),
-              legend: Legend(isVisible: true),
-              series: <CircularSeries>[
-                // Render pie chart
-                PieSeries<ChartData, String>(
-                  dataSource: chartData,
-                  pointColorMapper: (ChartData data, _) => data.color,
-                  xValueMapper: (ChartData data, _) => data.x,
-                  yValueMapper: (ChartData data, _) => data.y,
-                  explode: true,
-                  legendIconType: LegendIconType.circle,
-                  dataLabelSettings: DataLabelSettings(isVisible: true),
-                ),
-              ]),
+            title: ChartTitle(text: "Sales"),
+            legend: Legend(isVisible: true),
+            series: <CircularSeries>[
+              PieSeries<ChartData, String>(
+                dataSource: chartData,
+                pointColorMapper: (ChartData data, _) => data.color,
+                xValueMapper: (ChartData data, _) => data.x,
+                yValueMapper: (ChartData data, _) => data.y,
+                explode: true,
+                legendIconType: LegendIconType.circle,
+                dataLabelSettings: DataLabelSettings(isVisible: true),
+              ),
+            ],
+          ),
           const Divider(
             color: Colors.blue,
             height: 10,
@@ -55,7 +62,12 @@ class DashBoard extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(10),
             child: SfSparkLineChart.custom(
-               
+              axisCrossesAt: 35,
+              axisLineColor: Colors.blue,
+              color: Colors.black,
+              highPointColor: Colors.red,
+              lowPointColor: Colors.green,
+              isInversed: true,
               trackball: SparkChartTrackball(
                   activationMode: SparkChartActivationMode.tap),
               marker: SparkChartMarker(
@@ -63,26 +75,36 @@ class DashBoard extends StatelessWidget {
               labelDisplayMode: SparkChartLabelDisplayMode.all,
               xValueMapper: (int index) => data[index].year,
               yValueMapper: (int index) => data[index].sales,
-              dataCount: 5,
+              dataCount: 12,
             ),
           ),
+          const Divider(
+            color: Colors.blue,
+            height: 10,
+            thickness: 3,
+            indent: 30,
+            endIndent: 30,
+          ),
           SfCartesianChart(
-              primaryXAxis: CategoryAxis(),
-              // Chart title
-              title: ChartTitle(text: 'Half yearly sales analysis'),
-              // Enable legend
-              legend: Legend(isVisible: true),
-              // Enable tooltip
-              tooltipBehavior: TooltipBehavior(enable: true),
-              series: <ChartSeries<_SalesData, String>>[
-                LineSeries<_SalesData, String>(
-                    dataSource: data,
-                    xValueMapper: (_SalesData sales, _) => sales.year,
-                    yValueMapper: (_SalesData sales, _) => sales.sales,
-                    name: 'Sales',
-                    // Enable data label
-                    dataLabelSettings: DataLabelSettings(isVisible: true))
-              ]),
+            primaryXAxis: CategoryAxis(),
+            title: ChartTitle(text: 'Half yearly sales analysis'),
+            legend: Legend(isVisible: true),
+            tooltipBehavior: TooltipBehavior(enable: true),
+            series: <ChartSeries<_SalesData, String>>[
+              LineSeries<_SalesData, String>(
+                isVisibleInLegend: true,
+                legendItemText: "data",
+                yAxisName: "Sales",
+                xAxisName: "Months",
+                
+                dataSource: data,
+                xValueMapper: (_SalesData sales, _) => sales.year,
+                yValueMapper: (_SalesData sales, _) => sales.sales,
+                name: 'Sales',
+                dataLabelSettings: const DataLabelSettings(isVisible: true),
+              ),
+            ],
+          ),
         ],
       ),
     );
@@ -102,7 +124,6 @@ class ChartData {
 
 class _SalesData {
   _SalesData(this.year, this.sales);
-
   final String year;
   final double sales;
 }
