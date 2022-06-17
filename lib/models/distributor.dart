@@ -1,5 +1,3 @@
-import 'package:flutter/cupertino.dart';
-
 class Distributor {
   String name;
   String number;

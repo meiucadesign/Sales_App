@@ -1,9 +1,6 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:sales_app/models/distributor.dart';
-import 'package:sales_app/screens/dashboard.dart';
-
 import '../styles/styles.dart';
 import '../widgets/custom_drawer.dart';
 import '../widgets/show_custom_dialog.dart';
@@ -13,11 +10,26 @@ class HomeScreen extends StatefulWidget {
   List<DropdownMenuItem<String>> get dropdownItems {
     List<DropdownMenuItem<String>> menuItems = [
       const DropdownMenuItem(
-          child: Text("Select"), value: "default", enabled: false),
-      DropdownMenuItem(child: Text("Panadol"), value: "Panadol"),
-      DropdownMenuItem(child: Text("Omnidol"), value: "Omnidol"),
-      DropdownMenuItem(child: Text("Dazzy"), value: "Dazzy"),
-      DropdownMenuItem(child: Text("ABC1"), value: "ABC"),
+        value: "default",
+        enabled: false,
+        child: Text("Select"),
+      ),
+      const DropdownMenuItem(
+        value: "Panadol",
+        child: Text("Panadol"),
+      ),
+      const DropdownMenuItem(
+        value: "Omnidol",
+        child: Text("Omnidol"),
+      ),
+      const DropdownMenuItem(
+        value: "Dazzy",
+        child: Text("Dazzy"),
+      ),
+      const DropdownMenuItem(
+        value: "ABC",
+        child: Text("ABC1"),
+      ),
     ];
     return menuItems;
   }
@@ -56,6 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
           padding: EdgeInsets.all(8.0),
           child: Text(
             "Description",
+            overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Colors.white,
@@ -102,7 +115,7 @@ class _HomeScreenState extends State<HomeScreen> {
         title: const Text("add Invoice"),
         centerTitle: true,
       ),
-      drawer: CustomDrawer(),
+      drawer: const CustomDrawer(),
       body: Container(
         margin: const EdgeInsets.all(10),
         width: double.infinity,
@@ -134,7 +147,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         },
                       ),
                       Container(
-                        margin: EdgeInsets.all(12),
+                        margin: const EdgeInsets.all(12),
                         height: 5 * 24.0,
                         child: TextFormField(
                           controller: descriptionController,
@@ -164,8 +177,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       DropdownButton(
                         items: const [
                           DropdownMenuItem(
-                            child: Text("Nill"),
                             value: "Nill",
+                            child: Text("Nill"),
                           )
                         ],
                         onChanged: (index) {},
@@ -200,6 +213,15 @@ class _HomeScreenState extends State<HomeScreen> {
                         height: 10,
                       ),
                       TextFormField(
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return "Enter discount amount";
+                          } else if (int.tryParse(value) == null) {
+                            return "Enter valid discount amount";
+                          } else if (int.parse(value) > 100) {
+                            return "Discount amount should be less than 100";
+                          }
+                        },
                         controller: discountController,
                         keyboardType: TextInputType.number,
                         decoration: InputDecoration(
@@ -259,8 +281,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         icon: const Icon(Icons.add_circle),
                         onPressed: () {
-                          print(
-                              "Name:${distributor.name} Number:${distributor.number} Payment Method:${distributor.paymentMethod}");
                           _addItemtoList();
                         },
                         label: const Text(
@@ -289,7 +309,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     Colors.white,
                   ),
                   textStyle: MaterialStateProperty.all(
-                      TextStyle(fontWeight: FontWeight.normal)),
+                    const TextStyle(
+                      fontWeight: FontWeight.normal,
+                    ),
+                  ),
                 ),
                 onPressed: (total == 0)
                     ? null

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../models/distributor.dart';
 
 showCustomDialog(BuildContext context) {
-  var _formKey = GlobalKey<FormState>();
+  var formKey = GlobalKey<FormState>();
 
   var selectedValue = "null";
   showDialog(
@@ -23,7 +23,7 @@ showCustomDialog(BuildContext context) {
               content: SizedBox(
                 height: 300,
                 child: Form(
-                  key: _formKey,
+                  key: formKey,
                   child: Column(
                     children: [
                       TextFormField(
@@ -54,19 +54,19 @@ showCustomDialog(BuildContext context) {
                           }
                         },
                         value: distributor.paymentMethod,
-                        items: [
+                        items: const [
                           DropdownMenuItem(
                             enabled: false,
-                            child: Text("Select Payment Method"),
                             value: "null",
+                            child: Text("Select Payment Method"),
                           ),
                           DropdownMenuItem(
-                            child: Text("Cash"),
                             value: "Cash",
+                            child: Text("Cash"),
                           ),
                           DropdownMenuItem(
-                            child: Text("Bank"),
                             value: "Bank",
+                            child: Text("Bank"),
                           ),
                         ],
                         onChanged: (value) {
@@ -77,13 +77,11 @@ showCustomDialog(BuildContext context) {
                             setState(() {
                               distributor.bankSelected = true;
                             });
-                            print(distributor.bankSelected);
                           } else {
                             setState(() {
                               distributor.bankSelected = false;
                             });
                           }
-                          print(selectedValue);
                         },
                       ),
                       distributor.bankSelected == true
@@ -92,24 +90,24 @@ showCustomDialog(BuildContext context) {
                               items: const [
                                 DropdownMenuItem(
                                   enabled: false,
-                                  child: Text("Select Bank"),
                                   value: "null",
+                                  child: Text("Select Bank"),
                                 ),
                                 DropdownMenuItem(
-                                  child: Text("HBL"),
                                   value: "HBL",
+                                  child: Text("HBL"),
                                 ),
                                 DropdownMenuItem(
-                                  child: Text("UBL"),
                                   value: "UBL",
+                                  child: Text("UBL"),
                                 ),
                                 DropdownMenuItem(
-                                  child: Text("NBP"),
                                   value: "NBP",
+                                  child: Text("NBP"),
                                 ),
                                 DropdownMenuItem(
-                                  child: Text("ABL"),
                                   value: "ABL",
+                                  child: Text("ABL"),
                                 ),
                               ],
                               onChanged: (value) {
@@ -124,8 +122,8 @@ showCustomDialog(BuildContext context) {
               actions: [
                 TextButton(
                   onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      _formKey.currentState!.save();
+                    if (formKey.currentState!.validate()) {
+                      formKey.currentState!.save();
                       Navigator.pop(context);
                     }
                   },
