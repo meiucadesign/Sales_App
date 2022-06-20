@@ -1,11 +1,19 @@
 import 'package:flutter/material.dart';
-
-import '../models/distributor.dart';
+import 'package:sales_app/Util/network_helper.dart';
+import 'package:sales_app/constant/api.dart';
+import 'package:searchfield/searchfield.dart';
+import '../models/distributor_model.dart';
 
 showCustomDialog(BuildContext context) {
   var formKey = GlobalKey<FormState>();
+  DistributorModel distributor = DistributorModel(
+    name: "",
+    id: 0,
+    branchId: 0,
+    paymentMethod: "null",
+    bankSelected: false,
+  );
 
-  var selectedValue = "null";
   showDialog(
       barrierDismissible: false,
       context: context,
@@ -26,31 +34,29 @@ showCustomDialog(BuildContext context) {
                   key: formKey,
                   child: Column(
                     children: [
-                      TextFormField(
-                        onSaved: (newValue) =>
-                            distributor.name = newValue.toString(),
+                      SearchField(
+                        suggestions: distributorListItem,
+                        onSubmit: (newValue) {
+                          distributor.name = newValue.toString();
+                          print(distributorListItem);
+                        },
                         validator: (value) {
                           if (value!.isEmpty) {
                             return "Enter Distributor Name";
+                          } else {
+                            return null;
                           }
                         },
-                        decoration: const InputDecoration(
+                        searchInputDecoration: const InputDecoration(
                           hintText: "Distributor Name",
-                        ),
-                      ),
-                      TextFormField(
-                        onSaved: (newValue) =>
-                            distributor.number = newValue.toString(),
-                        validator: (value) =>
-                            value!.isEmpty ? "Enter Address" : null,
-                        decoration: const InputDecoration(
-                          hintText: "Distributor Phone",
                         ),
                       ),
                       DropdownButtonFormField(
                         validator: (value) {
                           if (value == "null") {
                             return "Select Payment Method";
+                          } else {
+                            return null;
                           }
                         },
                         value: distributor.paymentMethod,
@@ -70,9 +76,6 @@ showCustomDialog(BuildContext context) {
                           ),
                         ],
                         onChanged: (value) {
-                          setState(() {
-                            selectedValue = value.toString();
-                          });
                           if (value.toString() == "Bank") {
                             setState(() {
                               distributor.bankSelected = true;
@@ -133,5 +136,7 @@ showCustomDialog(BuildContext context) {
             );
           },
         );
-      });
+      }).then((value) {
+    NetworkHelper.getProductList(productListApiKey);
+  });
 }

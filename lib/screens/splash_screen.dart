@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:sales_app/Util/network_helper.dart';
+import 'package:sales_app/constant/api.dart';
 import 'package:sales_app/screens/home_screen.dart';
 import 'package:sales_app/screens/login_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -17,8 +19,11 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     getLogInData().whenComplete(() async {
-      Timer(Duration(seconds: 2), () {
-        Get.off(widget.isLoggedIn ? HomeScreen() : LoginScreen());
+      Timer(const Duration(seconds: 0), () {
+        if (widget.isLoggedIn) {
+          NetworkHelper.getData(url: custListApiKey);
+        }
+        Get.off(() => widget.isLoggedIn ? HomeScreen() : LoginScreen());
       });
     });
 

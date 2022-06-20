@@ -1,38 +1,14 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:sales_app/models/distributor.dart';
+import 'package:sales_app/models/distributor_model.dart';
+import 'package:searchfield/searchfield.dart';
+import '../models/product_model.dart';
 import '../styles/styles.dart';
 import '../widgets/custom_drawer.dart';
 import '../widgets/show_custom_dialog.dart';
 
 class HomeScreen extends StatefulWidget {
   static const routeName = '/home';
-  List<DropdownMenuItem<String>> get dropdownItems {
-    List<DropdownMenuItem<String>> menuItems = [
-      const DropdownMenuItem(
-        value: "default",
-        enabled: false,
-        child: Text("Select"),
-      ),
-      const DropdownMenuItem(
-        value: "Panadol",
-        child: Text("Panadol"),
-      ),
-      const DropdownMenuItem(
-        value: "Omnidol",
-        child: Text("Omnidol"),
-      ),
-      const DropdownMenuItem(
-        value: "Dazzy",
-        child: Text("Dazzy"),
-      ),
-      const DropdownMenuItem(
-        value: "ABC",
-        child: Text("ABC1"),
-      ),
-    ];
-    return menuItems;
-  }
 
   var bankSelected = false;
 
@@ -41,14 +17,15 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  Distributor distributor = Distributor(
-      name: "", number: "", paymentMethod: "null", bankSelected: false);
+  DistributorModel distributor = DistributorModel(
+      name: "", id: 0, branchId: 0, paymentMethod: "null", bankSelected: false);
+  TextEditingController productController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
   TextEditingController qntController = TextEditingController();
   TextEditingController discountController = TextEditingController();
   TextEditingController rateController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  var productList = [
+  var productListTable = [
     const TableRow(
       decoration: BoxDecoration(
         color: Color.fromARGB(179, 31, 154, 236),
@@ -128,23 +105,19 @@ class _HomeScreenState extends State<HomeScreen> {
                   key: _formKey,
                   child: Column(
                     children: [
-                      DropdownButtonFormField(
-                        style: const TextStyle(
-                          color: Colors.blue,
-                          fontSize: 20,
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      SearchField(
+                        controller: productController,
+                        suggestions: productList,
+                        hint: "Search Product",
+                        searchInputDecoration: InputDecoration(
+                          border: customNormalTextFieldBorder,
+                          errorBorder: customErrorTextFieldBorder,
+                          enabledBorder: customNormalTextFieldBorder,
+                          focusedBorder: customNormalTextFieldBorder,
                         ),
-                        validator: (value) {
-                          if (value == "default") {
-                            return "Select a Product";
-                          }
-                        },
-                        value: firsItem,
-                        items: widget.dropdownItems,
-                        onChanged: (index) {
-                          setState(() {
-                            firsItem = index.toString();
-                          });
-                        },
                       ),
                       Container(
                         margin: const EdgeInsets.all(12),
@@ -189,6 +162,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         validator: (value) {
                           if (value!.isEmpty) {
                             return "Enter rate";
+                          } else {
+                            return null;
                           }
                         },
                         keyboardType: TextInputType.number,
@@ -220,6 +195,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             return "Enter valid discount amount";
                           } else if (int.parse(value) > 100) {
                             return "Discount amount should be less than 100";
+                          } else {
+                            return null;
                           }
                         },
                         controller: discountController,
@@ -248,6 +225,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         validator: (value) {
                           if (value!.isEmpty) {
                             return "Enter rate";
+                          } else {
+                            return null;
                           }
                         },
                         controller: rateController,
@@ -297,7 +276,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   color: Colors.blue,
                   width: 2,
                 ),
-                children: productList,
+                children: productListTable,
               ),
               const SizedBox(
                 height: 30,
@@ -333,8 +312,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                   TextButton(
                                     onPressed: () {
                                       setState(() {
-                                        productList.removeRange(
-                                            1, productList.length);
+                                        productListTable.removeRange(
+                                            1, productListTable.length);
                                       });
                                       total = 0;
                                       Navigator.of(context).pop();
@@ -357,15 +336,16 @@ class _HomeScreenState extends State<HomeScreen> {
   _addItemtoList() {
     if (_formKey.currentState!.validate()) {
       setState(() {
-        productList.add(TableRow(children: [
+        productListTable.add(TableRow(children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Text(
-              ((widget.dropdownItems
-                          .singleWhere((element) => element.value == firsItem))
-                      .child as Text)
-                  .data!,
-              textAlign: TextAlign.center,
+            child: Center(
+              child: Text(
+                productController.text,
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ),
           Padding(

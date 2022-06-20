@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:sales_app/models/distributor.dart';
+import 'package:sales_app/models/distributor_model.dart';
 import 'package:sales_app/screens/dashboard.dart';
 import 'package:sales_app/screens/home_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -21,12 +21,12 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       // home: LoginScreen(),
-      routes: {
-        "/": (context) => SplashScreen(),
-        LoginScreen.routeName: (context) => LoginScreen(),
-        HomeScreen.routeName: (context) => HomeScreen(),
-        DashBoard.routeName: (context) => DashBoard(),
-      },
+      getPages: [
+        GetPage(name: '/', page: () => SplashScreen()),
+        GetPage(name: LoginScreen.routeName, page: () => LoginScreen()),
+        GetPage(name: DashBoard.routeName, page: () => DashBoard()),
+        GetPage(name: HomeScreen.routeName, page: () => HomeScreen()),
+      ],
     );
   }
 }

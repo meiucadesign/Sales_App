@@ -25,14 +25,12 @@ class CustomDrawer extends StatelessWidget {
               title: const Text("Home"),
               leading: const Icon(Icons.home),
               subtitle: const Text("Go to Home"),
-              selected:
-                  ModalRoute.of(context)!.settings.name == HomeScreen.routeName,
-              onTap:
-                  ModalRoute.of(context)!.settings.name == HomeScreen.routeName
-                      ? null
-                      : () {
-                          Navigator.of(context).pushNamed(HomeScreen.routeName);
-                        },
+              selected: Get.currentRoute == HomeScreen.routeName,
+              onTap: Get.currentRoute == HomeScreen.routeName
+                  ? null
+                  : () {
+                      Get.offNamed(HomeScreen.routeName);
+                    },
             ),
           ),
           Card(
@@ -41,14 +39,12 @@ class CustomDrawer extends StatelessWidget {
               title: const Text("Dashboard"),
               leading: const Icon(Icons.dashboard),
               subtitle: const Text("Go to Dashboard"),
-              selected:
-                  ModalRoute.of(context)!.settings.name == DashBoard.routeName,
-              onTap:
-                  ModalRoute.of(context)!.settings.name == DashBoard.routeName
-                      ? null
-                      : () {
-                          Navigator.of(context).pushNamed(DashBoard.routeName);
-                        },
+              selected: Get.currentRoute == DashBoard.routeName,
+              onTap: Get.currentRoute == DashBoard.routeName
+                  ? null
+                  : () {
+                      Get.offNamed(DashBoard.routeName);
+                    },
             ),
           ),
           const Card(

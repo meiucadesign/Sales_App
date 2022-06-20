@@ -1,14 +1,18 @@
-class Distributor {
+import 'package:searchfield/searchfield.dart';
+
+class ProductModel {
   String name;
-  String number;
+  int id;
+  int branchId;
   String paymentMethod;
   bool bankSelected;
   // DateTime createdAt;
   String? bankName;
 
-  Distributor({
+  ProductModel({
     required this.name,
-    required this.number,
+    required this.id,
+    required this.branchId,
     required this.paymentMethod,
     required this.bankSelected,
     this.bankName,
@@ -23,5 +27,4 @@ class Distributor {
   }
 }
 
-Distributor distributor = Distributor(
-    name: "", number: "", paymentMethod: "null", bankSelected: false);
+List<SearchFieldListItem> productList = [];
