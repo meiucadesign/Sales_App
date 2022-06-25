@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sales_app/Util/network_helper.dart';
-import 'package:sales_app/screens/home_screen.dart';
+import 'package:sales_app/constant/api.dart';
+import 'package:sales_app/screens/dashboard.dart';
 import 'package:sales_app/styles/styles.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -14,9 +15,17 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   bool isLoading = false;
+  bool isHide = true;
   final _formKey = GlobalKey<FormState>();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  var passCount = 0;
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +37,7 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
       body: Center(
         child: isLoading
-            ? CircularProgressIndicator()
+            ? const CircularProgressIndicator()
             : Container(
                 margin: const EdgeInsets.symmetric(
                   horizontal: 20,
@@ -75,12 +84,15 @@ class _LoginScreenState extends State<LoginScreen> {
                             return "Enter Email";
                           } else if (!value.contains("@")) {
                             return "Enter Valid Email";
+                          } else {
+                            return null;
                           }
                         },
+                        keyboardType: TextInputType.emailAddress,
                         controller: emailController,
                         decoration: InputDecoration(
                           hintText: "Enter Email",
-                          floatingLabelStyle: TextStyle(
+                          floatingLabelStyle: const TextStyle(
                             color: Colors.blue,
                             fontSize: 20,
                           ),
@@ -104,11 +116,38 @@ class _LoginScreenState extends State<LoginScreen> {
                         validator: (value) {
                           if (value!.isEmpty) {
                             return "Enter Password";
+                          } else {
+                            return null;
                           }
                         },
+                        onChanged: (value) {
+                          setState(() {
+                            passCount = value.length;
+                          });
+                        },
                         controller: passwordController,
-                        obscureText: true,
+                        obscureText: isHide,
                         decoration: InputDecoration(
+                          counterText: passCount == 0
+                              ? passCount.toString()
+                              : "${passCount < 6 ? "So Weak" : (passCount > 8 ? "Strong" : "Pair")} $passCount ",
+                          counterStyle: TextStyle(
+                            color: passCount < 6
+                                ? Colors.red
+                                : (passCount > 8
+                                    ? Colors.green
+                                    : Colors.orange),
+                          ),
+                          suffixIcon: IconButton(
+                            onPressed: () {
+                              setState(() {
+                                isHide = !isHide;
+                              });
+                            },
+                            icon: isHide
+                                ? const Icon(Icons.lock_open)
+                                : const Icon(Icons.lock),
+                          ),
                           floatingLabelStyle: const TextStyle(
                             color: Colors.blue,
                             fontSize: 20,
@@ -138,7 +177,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             Colors.blue,
                           ),
                           minimumSize: MaterialStateProperty.all(
-                            Size(150, 40),
+                            const Size(150, 40),
                           ),
                         ),
                         onPressed: () {
@@ -183,8 +222,10 @@ class _LoginScreenState extends State<LoginScreen> {
       });
       prefs
           .setBool("isLoggedIn", true)
-          .then((value) => print("logged in successfully"));
-      Get.to(HomeScreen());
+          .then((value) => NetworkHelper.getData(url: custListApiKey));
+      prefs.setString("branch_id", loginResponse["branc_id"]);
+      prefs.setString("email", emailController.text);
+      Get.to(() => DashBoard());
     }
   }
 }

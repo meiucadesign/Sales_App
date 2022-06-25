@@ -34,39 +34,13 @@ class DashBoard extends StatelessWidget {
     _ChartData('test', 32.00),
     _ChartData('test Final Product', 1)
   ];
-  TooltipBehavior _tooltip = TooltipBehavior(enable: true);
+  final TooltipBehavior _tooltip = TooltipBehavior(enable: true);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Dashboard"),
         centerTitle: true,
-        actions: [
-          Directionality(
-            textDirection: TextDirection.rtl,
-            child: ElevatedButton.icon(
-              onPressed: () {
-                showMenu(
-                  context: context,
-                  position: const RelativeRect.fromLTRB(40, 60, 20, 20),
-                  items: [
-                    PopupMenuItem(
-                      child: Text("Branch 1"),
-                    ),
-                    PopupMenuItem(
-                      child: Text("Branch 2"),
-                    ),
-                    PopupMenuItem(
-                      child: Text("Branch 3"),
-                    ),
-                  ],
-                );
-              },
-              label: Text("Change Branch"),
-              icon: const Icon(Icons.more_vert),
-            ),
-          ),
-        ],
       ),
       drawer: CustomDrawer(),
       body: SingleChildScrollView(
@@ -83,7 +57,7 @@ class DashBoard extends StatelessWidget {
                   yValueMapper: (ChartData data, _) => data.y,
                   explode: true,
                   legendIconType: LegendIconType.circle,
-                  dataLabelSettings: DataLabelSettings(isVisible: true),
+                  dataLabelSettings: const DataLabelSettings(isVisible: true),
                 ),
               ],
             ),
@@ -139,6 +113,13 @@ class DashBoard extends StatelessWidget {
                 ),
               ],
             ),
+            const Divider(
+              color: Colors.blue,
+              height: 10,
+              thickness: 3,
+              indent: 30,
+              endIndent: 30,
+            ),
             SizedBox(
               height: 400,
               child: SfCartesianChart(
@@ -159,7 +140,7 @@ class DashBoard extends StatelessWidget {
                     xValueMapper: (_ChartData data, _) => data.x,
                     yValueMapper: (_ChartData data, _) => data.y,
                     name: 'Sales Product',
-                    color: Color.fromRGBO(8, 142, 255, 1),
+                    color: const Color.fromRGBO(8, 142, 255, 1),
                   ),
                 ],
               ),

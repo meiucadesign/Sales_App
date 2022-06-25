@@ -4,7 +4,7 @@ import 'package:sales_app/constant/api.dart';
 import 'package:searchfield/searchfield.dart';
 import '../models/distributor_model.dart';
 
-showCustomDialog(BuildContext context) {
+Future<void> showCustomDialog(BuildContext context) async {
   var formKey = GlobalKey<FormState>();
   DistributorModel distributor = DistributorModel(
     name: "",
@@ -36,9 +36,8 @@ showCustomDialog(BuildContext context) {
                     children: [
                       SearchField(
                         suggestions: distributorListItem,
-                        onSubmit: (newValue) {
-                          distributor.name = newValue.toString();
-                          print(distributorListItem);
+                        onSuggestionTap: (distributorSelected) {
+                          FocusScope.of(context).unfocus();
                         },
                         validator: (value) {
                           if (value!.isEmpty) {

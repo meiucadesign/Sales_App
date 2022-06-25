@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:sales_app/models/distributor_model.dart';
 import 'package:sales_app/screens/dashboard.dart';
 import 'package:sales_app/screens/home_screen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'screens/login_screen.dart';
 import 'screens/splash_screen.dart';
 

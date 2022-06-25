@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:sales_app/models/distributor_model.dart';
+import 'package:intl/intl.dart';
+import 'package:sales_app/Util/network_helper.dart';
+import 'package:sales_app/constant/api.dart';
+import 'package:sales_app/helpers/calculations.dart';
 import 'package:searchfield/searchfield.dart';
 import '../models/product_model.dart';
 import '../styles/styles.dart';
@@ -17,10 +20,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  DistributorModel distributor = DistributorModel(
-      name: "", id: 0, branchId: 0, paymentMethod: "null", bankSelected: false);
+  DateTime? selectedDate;
   TextEditingController productController = TextEditingController();
-  TextEditingController descriptionController = TextEditingController();
   TextEditingController qntController = TextEditingController();
   TextEditingController discountController = TextEditingController();
   TextEditingController rateController = TextEditingController();
@@ -35,17 +36,6 @@ class _HomeScreenState extends State<HomeScreen> {
           padding: EdgeInsets.all(8.0),
           child: Text(
             "Product",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Colors.white,
-            ),
-          ),
-        ),
-        Padding(
-          padding: EdgeInsets.all(8.0),
-          child: Text(
-            "Description",
-            overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Colors.white,
@@ -75,13 +65,23 @@ class _HomeScreenState extends State<HomeScreen> {
       ],
     )
   ];
-  var firsItem = "default";
   double total = 0;
-  String msg = "null";
   @override
   void initState() {
-    Timer.run(() => showCustomDialog(context));
+    Timer.run(() => showCustomDialog(context)
+        .whenComplete(() => NetworkHelper.getProductList(productListApiKey)));
+
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    productController.dispose();
+    qntController.dispose();
+    discountController.dispose();
+    rateController.dispose();
+
+    super.dispose();
   }
 
   @override
@@ -92,7 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
         title: const Text("add Invoice"),
         centerTitle: true,
       ),
-      drawer: const CustomDrawer(),
+      drawer: CustomDrawer(),
       body: Container(
         margin: const EdgeInsets.all(10),
         width: double.infinity,
@@ -109,39 +109,35 @@ class _HomeScreenState extends State<HomeScreen> {
                         height: 10,
                       ),
                       SearchField(
+                        validator: ((p0) {
+                          if (p0 == null) {
+                            return "Enter Product ";
+                          } else if (!productList
+                              .contains(SearchFieldListItem(p0))) {
+                            return "Enter Valid Product";
+                          } else {
+                            return null;
+                          }
+                        }),
+                        onSuggestionTap: (choice) {
+                          FocusScope.of(context).unfocus();
+                          rateController.text = productModelList
+                              .singleWhere(
+                                  (element) => element.name == choice.searchKey)
+                              .rate
+                              .toString();
+                        },
                         controller: productController,
                         suggestions: productList,
                         hint: "Search Product",
                         searchInputDecoration: InputDecoration(
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 5,
+                          ),
                           border: customNormalTextFieldBorder,
                           errorBorder: customErrorTextFieldBorder,
                           enabledBorder: customNormalTextFieldBorder,
                           focusedBorder: customNormalTextFieldBorder,
-                        ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.all(12),
-                        height: 5 * 24.0,
-                        child: TextFormField(
-                          controller: descriptionController,
-                          maxLines: 5,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            fillColor: Colors.white,
-                            hintText: "Enter Product Description",
-                            hintStyle: const TextStyle(
-                              color: Colors.blue,
-                            ),
-                            filled: true,
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(20),
-                              borderSide: const BorderSide(
-                                color: Colors.blue,
-                              ),
-                            ),
-                          ),
                         ),
                       ),
                       const SizedBox(
@@ -157,96 +153,149 @@ class _HomeScreenState extends State<HomeScreen> {
                         onChanged: (index) {},
                         value: "Nill",
                       ),
-                      TextFormField(
-                        controller: qntController,
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return "Enter rate";
-                          } else {
-                            return null;
-                          }
-                        },
-                        keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
-                          floatingLabelStyle: const TextStyle(
-                            fontSize: 20,
-                          ),
-                          hintText: "Enter Product Quatity",
-                          hintStyle: const TextStyle(color: Colors.black38),
-                          label: const Text(
-                            "Quantity",
-                            style: TextStyle(
-                              color: Colors.blue,
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              controller: qntController,
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return "Enter quantity";
+                                } else {
+                                  return null;
+                                }
+                              },
+                              keyboardType: TextInputType.number,
+                              decoration: InputDecoration(
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 5,
+                                ),
+                                floatingLabelStyle: const TextStyle(
+                                  fontSize: 13,
+                                ),
+                                hintText: "Enter Product Quatity",
+                                hintStyle:
+                                    const TextStyle(color: Colors.black38),
+                                label: const Text(
+                                  "Quantity",
+                                  style: TextStyle(
+                                    color: Colors.blue,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                                errorBorder: customErrorTextFieldBorder,
+                                focusedBorder: customNormalTextFieldBorder,
+                                enabledBorder: customNormalTextFieldBorder,
+                              ),
                             ),
                           ),
-                          errorBorder: customErrorTextFieldBorder,
-                          focusedBorder: customNormalTextFieldBorder,
-                          enabledBorder: customNormalTextFieldBorder,
-                        ),
+                          const SizedBox(
+                            width: 8,
+                          ),
+                          Expanded(
+                            child: TextFormField(
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return "Enter rate";
+                                } else {
+                                  return null;
+                                }
+                              },
+                              controller: rateController,
+                              keyboardType: TextInputType.number,
+                              decoration: InputDecoration(
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 5,
+                                ),
+                                floatingLabelStyle: const TextStyle(
+                                  fontSize: 13,
+                                ),
+                                hintText: "Enter Rate",
+                                hintStyle:
+                                    const TextStyle(color: Colors.black38),
+                                label: const Text(
+                                  "Rate",
+                                  style: TextStyle(
+                                    color: Colors.blue,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                                errorBorder: customErrorTextFieldBorder,
+                                focusedBorder: customNormalTextFieldBorder,
+                                enabledBorder: customNormalTextFieldBorder,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 8,
+                          ),
+                          Expanded(
+                            child: TextFormField(
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return "Enter amount";
+                                } else if (int.tryParse(value) == null) {
+                                  return "invalid Discount";
+                                } else if (int.parse(value) > 100) {
+                                  return "Discount amount should be less than 100";
+                                } else {
+                                  return null;
+                                }
+                              },
+                              controller: discountController,
+                              keyboardType: TextInputType.number,
+                              decoration: InputDecoration(
+                                suffixIcon: const Icon(
+                                  Icons.percent,
+                                  size: 15,
+                                ),
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 5,
+                                ),
+                                floatingLabelStyle: const TextStyle(
+                                  fontSize: 13,
+                                ),
+                                hintText: "Enter Discount",
+                                hintStyle:
+                                    const TextStyle(color: Colors.black38),
+                                label: const Text(
+                                  "Dicount",
+                                  style: TextStyle(
+                                    color: Colors.blue,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                                errorBorder: customErrorTextFieldBorder,
+                                focusedBorder: customNormalTextFieldBorder,
+                                enabledBorder: customNormalTextFieldBorder,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                       const SizedBox(
                         height: 10,
                       ),
-                      TextFormField(
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return "Enter discount amount";
-                          } else if (int.tryParse(value) == null) {
-                            return "Enter valid discount amount";
-                          } else if (int.parse(value) > 100) {
-                            return "Discount amount should be less than 100";
-                          } else {
-                            return null;
-                          }
-                        },
-                        controller: discountController,
-                        keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
-                          floatingLabelStyle: const TextStyle(
-                            fontSize: 20,
-                          ),
-                          hintText: "Enter Discount",
-                          hintStyle: const TextStyle(color: Colors.black38),
-                          label: const Text(
-                            "Dicount",
-                            style: TextStyle(
-                              color: Colors.blue,
+                      TextButton.icon(
+                        onPressed: () async {
+                          var date = await showDatePicker(
+                            context: context,
+                            initialDate: DateTime.now(),
+                            firstDate: DateTime.now().subtract(
+                              const Duration(
+                                days: 30,
+                              ),
                             ),
-                          ),
-                          errorBorder: customErrorTextFieldBorder,
-                          focusedBorder: customNormalTextFieldBorder,
-                          enabledBorder: customNormalTextFieldBorder,
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      TextFormField(
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return "Enter rate";
-                          } else {
-                            return null;
-                          }
+                            lastDate: DateTime.now(),
+                          );
+                          setState(() {
+                            selectedDate = date;
+                          });
                         },
-                        controller: rateController,
-                        keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
-                          floatingLabelStyle: const TextStyle(
-                            fontSize: 20,
-                          ),
-                          hintText: "Enter Rate",
-                          hintStyle: const TextStyle(color: Colors.black38),
-                          label: const Text(
-                            "Rate",
-                            style: TextStyle(
-                              color: Colors.blue,
-                            ),
-                          ),
-                          errorBorder: customErrorTextFieldBorder,
-                          focusedBorder: customNormalTextFieldBorder,
-                          enabledBorder: customNormalTextFieldBorder,
-                        ),
+                        icon: const Icon(Icons.date_range),
+                        label: Text(selectedDate == null
+                            ? "Pick Date"
+                            : DateFormat.yMMMd().format(selectedDate!)),
                       ),
                       const SizedBox(
                         height: 10,
@@ -350,17 +399,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Center(
-              child: Text(
-                descriptionController.text,
-                textAlign: TextAlign.center,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
             child: Text(
               qntController.text,
               textAlign: TextAlign.center,
@@ -369,7 +407,10 @@ class _HomeScreenState extends State<HomeScreen> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(
-              rateController.text,
+              Calculations.priceAfterDiscount(int.parse(rateController.text),
+                      int.parse(discountController.text))
+                  .toString(),
+              // rateController.text,
               textAlign: TextAlign.center,
             ),
           ),
@@ -378,6 +419,8 @@ class _HomeScreenState extends State<HomeScreen> {
       total = total +
           int.parse(rateController.text) * int.parse(qntController.text);
       _formKey.currentState!.reset();
+      productController.text = "";
+      rateController.text = "";
     }
   }
 }
