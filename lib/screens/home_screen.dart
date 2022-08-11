@@ -1,9 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:sales_app/Util/network_helper.dart';
-import 'package:sales_app/constant/api.dart';
-import 'package:sales_app/helpers/calculations.dart';
+import 'package:sales_app/services/network_helper.dart';
 import 'package:searchfield/searchfield.dart';
 import '../models/product_model.dart';
 import '../styles/styles.dart';
@@ -13,75 +10,72 @@ import '../widgets/show_custom_dialog.dart';
 class HomeScreen extends StatefulWidget {
   static const routeName = '/home';
 
-  var bankSelected = false;
+  const HomeScreen({Key? key}) : super(key: key);
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  DateTime? selectedDate;
   TextEditingController productController = TextEditingController();
-  TextEditingController qntController = TextEditingController();
-  TextEditingController discountController = TextEditingController();
   TextEditingController rateController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  var productListTable = [
-    const TableRow(
-      decoration: BoxDecoration(
-        color: Color.fromARGB(179, 31, 154, 236),
+
+  List<Map<String, dynamic>> list = [];
+
+  Map<String, dynamic> productInfo = {
+    // "product_id": "4",
+    // "product_name": "",
+    // "product_rate": 3,
+    // "product_quantity": 2,
+    // "discount": "100",
+    // "total_amount1": "100"
+  };
+
+  final _headingRow = const TableRow(
+    decoration: BoxDecoration(
+      color: Color.fromARGB(179, 31, 154, 236),
+    ),
+    children: [
+      Padding(
+        padding: EdgeInsets.all(8.0),
+        child: Text(
+          "Product",
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
       ),
-      children: [
-        Padding(
-          padding: EdgeInsets.all(8.0),
-          child: Text(
-            "Product",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Colors.white,
-            ),
+      Padding(
+        padding: EdgeInsets.all(8.0),
+        child: Text(
+          "Quantity",
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: Colors.white,
           ),
         ),
-        Padding(
-          padding: EdgeInsets.all(8.0),
-          child: Text(
-            "Quantity",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Colors.white,
-            ),
+      ),
+      Padding(
+        padding: EdgeInsets.all(8.0),
+        child: Text(
+          "Rate",
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: Colors.white,
           ),
         ),
-        Padding(
-          padding: EdgeInsets.all(8.0),
-          child: Text(
-            "Rate",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Colors.white,
-            ),
-          ),
-        ),
-      ],
-    )
-  ];
+      ),
+    ],
+  );
+
   double total = 0;
   @override
   void initState() {
     Timer.run(() => showCustomDialog(context)
-        .whenComplete(() => NetworkHelper.getProductList(productListApiKey)));
-
+        .whenComplete(() => NetworkHelper.getProductList()));
     super.initState();
-  }
-
-  @override
-  void dispose() {
-    productController.dispose();
-    qntController.dispose();
-    discountController.dispose();
-    rateController.dispose();
-
-    super.dispose();
   }
 
   @override
@@ -109,25 +103,30 @@ class _HomeScreenState extends State<HomeScreen> {
                         height: 10,
                       ),
                       SearchField(
-                        validator: ((p0) {
-                          if (p0 == null) {
+                        controller: productController,
+                        validator: ((product) {
+                          if (product == null) {
                             return "Enter Product ";
                           } else if (!productList
-                              .contains(SearchFieldListItem(p0))) {
+                              .contains(SearchFieldListItem(product))) {
                             return "Enter Valid Product";
                           } else {
                             return null;
                           }
                         }),
                         onSuggestionTap: (choice) {
-                          FocusScope.of(context).unfocus();
+                          FocusManager.instance.primaryFocus!.unfocus();
                           rateController.text = productModelList
                               .singleWhere(
-                                  (element) => element.name == choice.searchKey)
+                                (element) =>
+                                    element.id ==
+                                    int.parse(choice.item.toString()),
+                              )
                               .rate
                               .toString();
+                          productInfo["product_id"] = choice.item;
+                          productInfo["product_name"] = choice.searchKey;
                         },
-                        controller: productController,
                         suggestions: productList,
                         hint: "Search Product",
                         searchInputDecoration: InputDecoration(
@@ -150,14 +149,17 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: Text("Nill"),
                           )
                         ],
-                        onChanged: (index) {},
+                        onChanged: null,
                         value: "Nill",
                       ),
                       Row(
                         children: [
                           Expanded(
                             child: TextFormField(
-                              controller: qntController,
+                              onSaved: (newValue) {
+                                productInfo["product_quantity"] =
+                                    int.parse(newValue!);
+                              },
                               validator: (value) {
                                 if (value!.isEmpty) {
                                   return "Enter quantity";
@@ -194,6 +196,11 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           Expanded(
                             child: TextFormField(
+                              controller: rateController,
+                              onSaved: (newValue) {
+                                productInfo["product_rate"] =
+                                    int.parse(newValue!);
+                              },
                               validator: (value) {
                                 if (value!.isEmpty) {
                                   return "Enter rate";
@@ -201,7 +208,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                   return null;
                                 }
                               },
-                              controller: rateController,
                               keyboardType: TextInputType.number,
                               decoration: InputDecoration(
                                 contentPadding: const EdgeInsets.symmetric(
@@ -231,6 +237,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           Expanded(
                             child: TextFormField(
+                              onSaved: (newValue) {
+                                productInfo["discount"] = int.parse(newValue!);
+                              },
                               validator: (value) {
                                 if (value!.isEmpty) {
                                   return "Enter amount";
@@ -242,7 +251,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                   return null;
                                 }
                               },
-                              controller: discountController,
                               keyboardType: TextInputType.number,
                               decoration: InputDecoration(
                                 suffixIcon: const Icon(
@@ -277,30 +285,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         height: 10,
                       ),
                       TextButton.icon(
-                        onPressed: () async {
-                          var date = await showDatePicker(
-                            context: context,
-                            initialDate: DateTime.now(),
-                            firstDate: DateTime.now().subtract(
-                              const Duration(
-                                days: 30,
-                              ),
-                            ),
-                            lastDate: DateTime.now(),
-                          );
-                          setState(() {
-                            selectedDate = date;
-                          });
-                        },
-                        icon: const Icon(Icons.date_range),
-                        label: Text(selectedDate == null
-                            ? "Pick Date"
-                            : DateFormat.yMMMd().format(selectedDate!)),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      TextButton.icon(
                         style: ButtonStyle(
                           backgroundColor:
                               MaterialStateProperty.all(Colors.blue),
@@ -325,7 +309,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   color: Colors.blue,
                   width: 2,
                 ),
-                children: productListTable,
+                children: [
+                  _headingRow,
+                  ...list.map((element) {
+                    return _productRow(element);
+                  }).toList(),
+                ],
               ),
               const SizedBox(
                 height: 30,
@@ -360,10 +349,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                   TextButton(
                                     onPressed: () {
-                                      setState(() {
-                                        productListTable.removeRange(
-                                            1, productListTable.length);
-                                      });
                                       total = 0;
                                       Navigator.of(context).pop();
                                     },
@@ -384,43 +369,57 @@ class _HomeScreenState extends State<HomeScreen> {
 
   _addItemtoList() {
     if (_formKey.currentState!.validate()) {
-      setState(() {
-        productListTable.add(TableRow(children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Center(
-              child: Text(
-                productController.text,
-                textAlign: TextAlign.center,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              qntController.text,
-              textAlign: TextAlign.center,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              Calculations.priceAfterDiscount(int.parse(rateController.text),
-                      int.parse(discountController.text))
-                  .toString(),
-              // rateController.text,
-              textAlign: TextAlign.center,
-            ),
-          ),
-        ]));
-      });
-      total = total +
-          int.parse(rateController.text) * int.parse(qntController.text);
+      _formKey.currentState!.save();
+      list.add(productInfo);
+      total += productInfo["product_rate"] * productInfo["product_quantity"];
+      FocusManager.instance.primaryFocus!.unfocus();
       _formKey.currentState!.reset();
-      productController.text = "";
-      rateController.text = "";
+      productController.clear();
+      rateController.clear();
     }
+  }
+
+  @override
+  void dispose() {
+    productController.dispose();
+    rateController.dispose();
+    super.dispose();
+  }
+
+  TableRow _productRow(Map<String, dynamic> element) {
+    return TableRow(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(
+            element["product_name"],
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 14,
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(
+            element["product_quantity"].toString(),
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 14,
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(
+            element["product_rate"].toString(),
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 14,
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }

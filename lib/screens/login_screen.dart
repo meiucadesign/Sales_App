@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:sales_app/Util/network_helper.dart';
-import 'package:sales_app/constant/api.dart';
+import 'package:sales_app/services/network_helper.dart';
 import 'package:sales_app/screens/dashboard.dart';
 import 'package:sales_app/styles/styles.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -222,7 +221,7 @@ class _LoginScreenState extends State<LoginScreen> {
       });
       prefs
           .setBool("isLoggedIn", true)
-          .then((value) => NetworkHelper.getData(url: custListApiKey));
+          .then((value) => NetworkHelper.getData());
       prefs.setString("branch_id", loginResponse["branc_id"]);
       prefs.setString("email", emailController.text);
       Get.to(() => DashBoard());

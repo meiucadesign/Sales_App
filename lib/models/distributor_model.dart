@@ -4,16 +4,13 @@ class DistributorModel {
   String name;
   int id;
   int branchId;
-  String paymentMethod;
   bool bankSelected;
-  // DateTime createdAt;
   String? bankName;
 
   DistributorModel({
     required this.name,
     required this.id,
     required this.branchId,
-    required this.paymentMethod,
     required this.bankSelected,
     this.bankName,
     // required this.createdAt,
@@ -21,11 +18,13 @@ class DistributorModel {
   void selectBank(bool newValue) {
     bankSelected = newValue;
   }
-
-  void updatePaymentMethod(String newPaymentMethod) {
-    paymentMethod = newPaymentMethod;
-  }
 }
 
 List<DistributorModel> distributorList = [];
 List<SearchFieldListItem> distributorListItem = [];
+DistributorModel distributor = DistributorModel(
+  name: "",
+  id: 0,
+  branchId: 0,
+  bankSelected: false,
+);

@@ -1,8 +1,7 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sales_app/screens/login_screen.dart';
+import 'package:sales_app/services/network_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../screens/dashboard.dart';
 import '../screens/home_screen.dart';
@@ -38,10 +37,8 @@ class CustomDrawer extends StatelessWidget {
                   padding: EdgeInsets.zero,
                   child: ListTile(
                     contentPadding: const EdgeInsets.only(left: 5),
-                    horizontalTitleGap: 5,
+                    horizontalTitleGap: 10,
                     leading: CircleAvatar(
-                      backgroundColor: Colors
-                          .primaries[Random().nextInt(Colors.primaries.length)],
                       child: Text(
                         email.split("@")[0][0].toUpperCase(),
                         style: const TextStyle(
@@ -70,6 +67,8 @@ class CustomDrawer extends StatelessWidget {
                   onTap: Get.currentRoute == HomeScreen.routeName
                       ? null
                       : () {
+                          NetworkHelper.getData();
+                          NetworkHelper.getCurrencyListRequest();
                           Get.offNamed(HomeScreen.routeName);
                         },
                 ),

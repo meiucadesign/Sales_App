@@ -1,8 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:sales_app/Util/network_helper.dart';
-import 'package:sales_app/constant/api.dart';
+import 'package:sales_app/services/network_helper.dart';
 import 'package:sales_app/screens/dashboard.dart';
 import 'package:sales_app/screens/login_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -20,7 +19,8 @@ class _SplashScreenState extends State<SplashScreen> {
     getLogInData().whenComplete(() async {
       Timer(const Duration(seconds: 1), () {
         if (widget.isLoggedIn) {
-          NetworkHelper.getData(url: custListApiKey);
+          NetworkHelper.getData();
+          NetworkHelper.getCurrencyListRequest();
         }
         Get.off(() => widget.isLoggedIn ? DashBoard() : LoginScreen());
       });
